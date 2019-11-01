@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
 
     # model = load_model(args.model)
-    model = torch.load('model_nvidianet_data2.pkl')
+    model = torch.load('model2.pkl')
     model.eval()
 
     if args.image_folder != '':

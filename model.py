@@ -68,28 +68,36 @@ class SdcSimDataset(Dataset):
 class NvidiaNet(nn.Module):
     def __init__(self):
         super(NvidiaNet, self).__init__()
+
+        #Conv Layers
         self.conv1 = nn.Conv2d(3, 24, 5, stride=2)
         self.conv2 = nn.Conv2d(24, 36, 5, stride=2)
         self.conv3 = nn.Conv2d(36, 48, 5, stride=2)
         self.conv4 = nn.Conv2d(48, 64, 3)
         self.conv5 = nn.Conv2d(64, 64, 3)
-        self.fc1   = nn.Linear(2112, 1164)
+
+        # Dense Layers
+        self.fc1   = nn.Linear(64*1*33, 1164)
         self.fc2   = nn.Linear(1164, 100)
         self.fc3   = nn.Linear(100, 50)
         self.fc4   = nn.Linear(50, 10)
         self.fc5   = nn.Linear(10, 1)
 
     def forward(self, x):
+
         out = F.relu(self.conv1(x))
         out = F.relu(self.conv2(out))
         out = F.relu(self.conv3(out))
         out = F.relu(self.conv4(out))
         out = F.relu(self.conv5(out))
+        # Introducing dropout in conv layer
+        out = F.dropout(out, p=0.7)
         out = out.view(out.size(0), -1)
         out = F.relu(self.fc1(out))
-        out = F.dropout(out, p=0.3)
+        #out = F.dropout(out, p=0.3)
+        out = F.dropout(out, p=0.5)
         out = F.relu(self.fc2(out))
-        out = F.dropout(out, p=0.3)
+        # out = F.dropout(out, p=0.3)
         out = F.relu(self.fc3(out))
         out = F.relu(self.fc4(out))
         out = self.fc5(out)
@@ -133,4 +141,4 @@ if __name__ == '__main__':
                       (epoch + 1, i + 1, running_loss / print_every))
                 running_loss = 0.0
 
-    torch.save(net, 'model2.pkl')
+    torch.save(net, 'model3.pkl')
